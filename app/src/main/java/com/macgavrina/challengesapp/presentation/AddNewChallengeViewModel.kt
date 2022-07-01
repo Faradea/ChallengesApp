@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.macgavrina.challengesapp.domain.Challenge
 import com.macgavrina.challengesapp.domain.GetRandomChallengeUsecase
+import com.macgavrina.challengesapp.domain.ResultOf
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -24,10 +25,13 @@ class AddNewChallengeViewModel @Inject constructor(
 
     private fun getRandomChallenge() {
         viewModelScope.launch {
-            val randomChallenge = getRandomChallengeUsecase.execute()
-            _state.emit(
-                AddNewChallengeViewState.Data(randomChallenge)
-            )
+            when (val result = getRandomChallengeUsecase.execute()) {
+                is ResultOf.Success -> {
+                    _state.emit(
+                        AddNewChallengeViewState.Data(result.data)
+                    )
+                }
+            }
         }
     }
 

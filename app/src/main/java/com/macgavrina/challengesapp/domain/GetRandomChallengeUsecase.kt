@@ -6,7 +6,7 @@ class GetRandomChallengeUsecase @Inject constructor(
     private val challengesRepository: ChallengesRepository
 ) {
 
-    suspend fun execute(): Challenge {
+    suspend fun execute(): ResultOf<Challenge> {
         return challengesRepository.getRandomChallenge()
     }
 }
