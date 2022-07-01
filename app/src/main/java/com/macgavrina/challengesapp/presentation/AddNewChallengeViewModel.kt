@@ -20,15 +20,23 @@ class AddNewChallengeViewModel @Inject constructor(
     val state: SharedFlow<AddNewChallengeViewState> = _state
 
     init {
-        getRandomChallenge()
+        if (_state.value !is AddNewChallengeViewState.Data) {
+            getRandomChallenge()
+        }
     }
 
-    private fun getRandomChallenge() {
+    fun getRandomChallenge() {
         viewModelScope.launch {
+            _state.emit(AddNewChallengeViewState.Loading)
             when (val result = getRandomChallengeUsecase.execute()) {
                 is ResultOf.Success -> {
                     _state.emit(
                         AddNewChallengeViewState.Data(result.data)
+                    )
+                }
+                is ResultOf.Error -> {
+                    _state.emit(
+                        AddNewChallengeViewState.Error(result.message)
                     )
                 }
             }
@@ -38,6 +46,6 @@ class AddNewChallengeViewModel @Inject constructor(
     sealed class AddNewChallengeViewState (data: Challenge? = null, errorMessage: String? = null) {
         object Loading: AddNewChallengeViewState()
         class Data(val data: Challenge): AddNewChallengeViewState(data = data)
-        class Error(errorMessage: String): AddNewChallengeViewState(errorMessage = errorMessage)
+        class Error(val errorMessage: String): AddNewChallengeViewState(errorMessage = errorMessage)
     }
 }

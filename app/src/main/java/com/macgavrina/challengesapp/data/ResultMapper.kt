@@ -17,5 +17,7 @@ suspend fun <T : Any> handleApiRequest(
         }
     } catch (e: HttpException) {
         ResultOf.Error(message = e.message())
+    } catch (e: Exception) {
+        ResultOf.Error(message = e.message ?: "Unknown error")
     }
 }
