@@ -3,8 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Android_dev/ChallengesApp/app/src/main/res/layout/activity_challenges_list.xml" value="0.22826086956521738" />
         <entry key="..\:/Android_dev/ChallengesApp/app/src/main/res/layout/activity_main.xml" value="0.2421875" />
-        <entry key="..\:/Android_dev/ChallengesApp/app/src/main/res/layout/bottom_sheet_add_challenge.xml" value="0.22826086956521738" />
+        <entry key="..\:/Android_dev/ChallengesApp/app/src/main/res/layout/bottom_sheet_add_challenge.xml" value="0.1" />
       </map>
     </option>
   </component>

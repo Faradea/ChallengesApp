@@ -1,13 +1,19 @@
-package com.macgavrina.challengesapp
+package com.macgavrina.challengesapp.presentation
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.macgavrina.challengesapp.domain.Challenge
+import com.macgavrina.challengesapp.domain.GetRandomChallengeUsecase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MainViewModel: ViewModel() {
+@HiltViewModel
+class MainViewModel @Inject constructor(): ViewModel() {
 
     companion object {
         private const val LOG_TAG = "MainViewModel"

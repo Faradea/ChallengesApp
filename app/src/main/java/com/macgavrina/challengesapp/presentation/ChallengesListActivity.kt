@@ -1,17 +1,21 @@
-package com.macgavrina.challengesapp
+package com.macgavrina.challengesapp.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.macgavrina.challengesapp.R
 import com.macgavrina.challengesapp.databinding.ActivityChallengesListBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class ChallengesListActivity : AppCompatActivity() {
 
-    private lateinit var vm: MainViewModel
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,15 +24,13 @@ class ChallengesListActivity : AppCompatActivity() {
         val binding = ActivityChallengesListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        vm = ViewModelProvider(this)[MainViewModel::class.java]
-
         binding.addChallengeButton.setOnClickListener {
-            vm.onAddChallenge()
+            viewModel.onAddChallenge()
         }
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                vm.navigationEvent.collect {
+                viewModel.navigationEvent.collect {
                     val modalBottomSheet = AddChallengeBottomSheet()
                     modalBottomSheet.show(supportFragmentManager, "AddChallengeBottomSheet")
                 }
