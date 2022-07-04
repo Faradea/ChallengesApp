@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.macgavrina.challengesapp.databinding.BottomSheetAddChallengeBinding
+import com.macgavrina.challengesapp.domain.Challenge
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -30,6 +31,15 @@ class AddChallengeBottomSheet: BottomSheetDialogFragment() {
     ): View {
         binding = BottomSheetAddChallengeBinding.inflate(inflater, container, false)
         binding.errorReloadTv.setOnClickListener {
+            viewModel.getRandomChallenge()
+        }
+        binding.acceptChallengeButton.setOnClickListener {
+            viewModel.acceptChallenge(Challenge(
+                binding.newChallengeTv.text.toString()
+            ))
+            dialog?.hide()
+        }
+        binding.skipChallengeButton.setOnClickListener {
             viewModel.getRandomChallenge()
         }
         return binding.root

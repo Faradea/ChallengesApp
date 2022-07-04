@@ -2,6 +2,7 @@ package com.macgavrina.challengesapp.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.macgavrina.challengesapp.domain.AcceptChallengeUsecase
 import com.macgavrina.challengesapp.domain.Challenge
 import com.macgavrina.challengesapp.domain.GetRandomChallengeUsecase
 import com.macgavrina.challengesapp.domain.ResultOf
@@ -13,7 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddNewChallengeViewModel @Inject constructor(
-    private val getRandomChallengeUsecase: GetRandomChallengeUsecase
+    private val getRandomChallengeUsecase: GetRandomChallengeUsecase,
+    private val acceptChallengeUsecase: AcceptChallengeUsecase
 ): ViewModel() {
 
     private val _state = MutableStateFlow<AddNewChallengeViewState>(AddNewChallengeViewState.Loading)
@@ -22,6 +24,12 @@ class AddNewChallengeViewModel @Inject constructor(
     init {
         if (_state.value !is AddNewChallengeViewState.Data) {
             getRandomChallenge()
+        }
+    }
+
+    fun acceptChallenge(challenge: Challenge) {
+        viewModelScope.launch {
+            acceptChallengeUsecase.execute(challenge)
         }
     }
 
