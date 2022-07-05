@@ -3,10 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Android_dev/ChallengesApp/app/src/main/res/layout/activity_challenges_list.xml" value="0.22826086956521738" />
+        <entry key="..\:/Android_dev/ChallengesApp/app/src/main/res/layout/activity_challenges_list.xml" value="0.21951219512195122" />
         <entry key="..\:/Android_dev/ChallengesApp/app/src/main/res/layout/activity_main.xml" value="0.2421875" />
         <entry key="..\:/Android_dev/ChallengesApp/app/src/main/res/layout/bottom_sheet_add_challenge.xml" value="0.21428571428571427" />
         <entry key="..\:/Android_dev/ChallengesApp/app/src/main/res/layout/error_layout.xml" value="0.2" />
+        <entry key="..\:/Android_dev/ChallengesApp/app/src/main/res/layout/item_challenge.xml" value="0.21951219512195122" />
       </map>
     </option>
   </component>

@@ -6,4 +6,6 @@ class ChallengeLocalStore @Inject constructor(private val challengeDAO: Challeng
 
     suspend fun addChallenge(challengeEntity: ChallengeEntity) =
         challengeDAO.addChallenge(challengeEntity)
+
+    fun getChallengesAll() = challengeDAO.getChallengesAll()
 }

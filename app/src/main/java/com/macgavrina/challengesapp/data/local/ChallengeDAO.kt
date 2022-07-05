@@ -10,4 +10,7 @@ interface ChallengeDAO {
 
     @Insert
     suspend fun addChallenge(challengeEntity: ChallengeEntity)
+
+    @Query("SELECT * FROM challenges")
+    abstract fun getChallengesAll(): Flow<List<ChallengeEntity>>
 }
