@@ -7,5 +7,6 @@ import androidx.room.PrimaryKey
 data class ChallengeEntity (
     @PrimaryKey(autoGenerate = true)
     val id: Int? = null,
-    val name: String
+    val name: String,
+    val isCompleted: Boolean
 )

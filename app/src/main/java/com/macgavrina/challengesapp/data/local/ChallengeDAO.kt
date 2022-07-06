@@ -12,5 +12,8 @@ interface ChallengeDAO {
     suspend fun addChallenge(challengeEntity: ChallengeEntity)
 
     @Query("SELECT * FROM challenges")
-    abstract fun getChallengesAll(): Flow<List<ChallengeEntity>>
+    fun getChallengesAll(): Flow<List<ChallengeEntity>>
+
+    @Query("UPDATE challenges set isCompleted = :isCompleted WHERE id = :id")
+    fun updateChallengeIsCompleted(isCompleted: Boolean, id: Int)
 }

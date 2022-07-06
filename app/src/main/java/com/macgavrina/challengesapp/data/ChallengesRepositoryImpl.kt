@@ -36,12 +36,16 @@ class ChallengesRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun updateChallengeIsCompleted(isCompleted: Boolean, id: Int) {
+        localStore.updateChallengeIsCompleted(isCompleted, id)
+    }
+
     private fun ChallengeModel.toDomain(): Challenge =
-        Challenge(name = this.activity)
+        Challenge(name = this.activity, isCompleted = false)
 
     private fun Challenge.toEntity(): ChallengeEntity =
-        ChallengeEntity(name = this.name)
+        ChallengeEntity(name = this.name, isCompleted = this.isCompleted)
 
     private fun ChallengeEntity.toDomain(): Challenge =
-        Challenge(id = this.id, name = this.name)
+        Challenge(id = this.id, name = this.name, isCompleted = isCompleted)
 }

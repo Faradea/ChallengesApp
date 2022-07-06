@@ -34,9 +34,7 @@ class AddChallengeBottomSheet: BottomSheetDialogFragment() {
             viewModel.getRandomChallenge()
         }
         binding.acceptChallengeButton.setOnClickListener {
-            viewModel.acceptChallenge(Challenge(
-                name = binding.newChallengeTv.text.toString()
-            ))
+            viewModel.acceptChallenge(binding.newChallengeTv.text.toString())
             dialog?.hide()
         }
         binding.skipChallengeButton.setOnClickListener {

@@ -8,4 +8,7 @@ class ChallengeLocalStore @Inject constructor(private val challengeDAO: Challeng
         challengeDAO.addChallenge(challengeEntity)
 
     fun getChallengesAll() = challengeDAO.getChallengesAll()
+
+    fun updateChallengeIsCompleted(isCompleted: Boolean, id: Int) =
+        challengeDAO.updateChallengeIsCompleted(isCompleted, id)
 }

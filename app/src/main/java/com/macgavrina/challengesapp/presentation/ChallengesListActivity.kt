@@ -20,7 +20,7 @@ class ChallengesListActivity : AppCompatActivity() {
 
     private val adapter = ChallengesListAdapter(
         onUpdateIsChecked = { id, isChecked ->
-            // ToDo
+            viewModel.updateChallengeIsCompleted(id, isChecked)
         }
     )
 

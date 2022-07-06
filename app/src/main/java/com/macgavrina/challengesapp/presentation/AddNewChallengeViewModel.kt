@@ -27,9 +27,9 @@ class AddNewChallengeViewModel @Inject constructor(
         }
     }
 
-    fun acceptChallenge(challenge: Challenge) {
+    fun acceptChallenge(challengeName: String) {
         viewModelScope.launch {
-            acceptChallengeUsecase.execute(challenge)
+            acceptChallengeUsecase.execute(Challenge(name = challengeName, isCompleted = false))
         }
     }
 

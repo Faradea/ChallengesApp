@@ -9,4 +9,6 @@ interface ChallengesRepository {
     suspend fun addChallenge(challenge: Challenge)
 
     fun getChallengesAll(): Flow<List<Challenge>>
+
+    fun updateChallengeIsCompleted(isCompleted: Boolean, id: Int)
 }

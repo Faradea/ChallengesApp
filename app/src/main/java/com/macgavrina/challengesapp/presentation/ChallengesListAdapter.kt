@@ -28,7 +28,7 @@ class ChallengesListAdapter (
         val item = getItem(pos)
 
         viewHolder.binding.challengeItemCheckbox.text = item.name
-        viewHolder.binding.challengeItemCheckbox.isChecked = false // Todo
+        viewHolder.binding.challengeItemCheckbox.isChecked = item.isCompleted
     }
 }
 
@@ -40,6 +40,6 @@ private class TodoItemCallback : DiffUtil.ItemCallback<Challenge>() {
     }
 
     override fun areContentsTheSame(item1: Challenge, item2: Challenge): Boolean {
-        return item1.name == item2.name // Todo && item1.isChecked == item2.isChecked
+        return item1.name == item2.name && item1.isCompleted == item2.isCompleted
     }
 }

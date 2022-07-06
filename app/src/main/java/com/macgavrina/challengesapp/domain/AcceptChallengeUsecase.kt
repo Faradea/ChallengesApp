@@ -1,5 +1,7 @@
 package com.macgavrina.challengesapp.domain
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class AcceptChallengeUsecase @Inject constructor(
@@ -7,6 +9,8 @@ class AcceptChallengeUsecase @Inject constructor(
 ) {
 
     suspend fun execute(challenge: Challenge) {
-        challengesRepository.addChallenge(challenge)
+        withContext(Dispatchers.IO) {
+            challengesRepository.addChallenge(challenge)
+        }
     }
 }

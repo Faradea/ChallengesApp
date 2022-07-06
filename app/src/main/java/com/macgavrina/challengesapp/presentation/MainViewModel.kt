@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.macgavrina.challengesapp.domain.Challenge
 import com.macgavrina.challengesapp.domain.GetChallengesAllUsecase
 import com.macgavrina.challengesapp.domain.GetRandomChallengeUsecase
+import com.macgavrina.challengesapp.domain.UpdateChallengeIsCompletedUsecase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val getChallengesAllUsecase: GetChallengesAllUsecase
+    private val getChallengesAllUsecase: GetChallengesAllUsecase,
+    private val updateChallengeIsCompletedUsecase: UpdateChallengeIsCompletedUsecase
 ): ViewModel() {
 
     val state: StateFlow<MainState>
@@ -43,6 +45,11 @@ class MainViewModel @Inject constructor(
             _navigationEvents.emit(NavigationEvent.AddNewChallenge)
         }
     }
+
+    fun updateChallengeIsCompleted(id: Int, isCompleted: Boolean) =
+        viewModelScope.launch {
+            updateChallengeIsCompletedUsecase.execute(id = id, isCompleted = isCompleted)
+        }
 
     sealed class NavigationEvent {
         object AddNewChallenge: NavigationEvent()
