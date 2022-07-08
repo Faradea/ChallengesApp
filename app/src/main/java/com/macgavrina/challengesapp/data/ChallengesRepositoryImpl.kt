@@ -36,15 +36,18 @@ class ChallengesRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun updateChallengeIsCompleted(isCompleted: Boolean, id: Int) {
+    override suspend fun updateChallengeIsCompleted(isCompleted: Boolean, id: Int) {
         localStore.updateChallengeIsCompleted(isCompleted, id)
     }
 
+    override suspend fun checkIfChallengeAlreadyExist(challenge: Challenge): Boolean =
+        localStore.checkIfChallengeExist(challenge.toEntity())
+
     private fun ChallengeModel.toDomain(): Challenge =
-        Challenge(name = this.activity, isCompleted = false)
+        Challenge(id = this.key, name = this.activity, isCompleted = false)
 
     private fun Challenge.toEntity(): ChallengeEntity =
-        ChallengeEntity(name = this.name, isCompleted = this.isCompleted)
+        ChallengeEntity(id = id, name = this.name, isCompleted = this.isCompleted)
 
     private fun ChallengeEntity.toDomain(): Challenge =
         Challenge(id = this.id, name = this.name, isCompleted = isCompleted)

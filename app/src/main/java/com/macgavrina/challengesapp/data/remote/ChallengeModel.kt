@@ -6,5 +6,5 @@ data class ChallengeModel (
     val participants: Int?,
     val price: Double?,
     val link: String?,
-    val key: String?,
+    val key: Int,
 )

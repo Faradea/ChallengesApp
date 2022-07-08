@@ -1,5 +1,6 @@
 package com.macgavrina.challengesapp.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.macgavrina.challengesapp.domain.AcceptChallengeUsecase
@@ -27,9 +28,9 @@ class AddNewChallengeViewModel @Inject constructor(
         }
     }
 
-    fun acceptChallenge(challengeName: String) {
+    fun acceptChallenge(challenge: Challenge) {
         viewModelScope.launch {
-            acceptChallengeUsecase.execute(Challenge(name = challengeName, isCompleted = false))
+            acceptChallengeUsecase.execute(challenge)
         }
     }
 

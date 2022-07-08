@@ -9,6 +9,9 @@ class ChallengeLocalStore @Inject constructor(private val challengeDAO: Challeng
 
     fun getChallengesAll() = challengeDAO.getChallengesAll()
 
-    fun updateChallengeIsCompleted(isCompleted: Boolean, id: Int) =
+    suspend fun updateChallengeIsCompleted(isCompleted: Boolean, id: Int) =
         challengeDAO.updateChallengeIsCompleted(isCompleted, id)
+
+    suspend fun checkIfChallengeExist(challengeEntity: ChallengeEntity): Boolean =
+        (challengeDAO.checkIfChallengeExist(challengeEntity.id) > 0)
 }

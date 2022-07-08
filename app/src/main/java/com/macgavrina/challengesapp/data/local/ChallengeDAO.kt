@@ -11,9 +11,12 @@ interface ChallengeDAO {
     @Insert
     suspend fun addChallenge(challengeEntity: ChallengeEntity)
 
-    @Query("SELECT * FROM challenges")
+    @Query("SELECT * FROM challenges order by createdAt")
     fun getChallengesAll(): Flow<List<ChallengeEntity>>
 
     @Query("UPDATE challenges set isCompleted = :isCompleted WHERE id = :id")
-    fun updateChallengeIsCompleted(isCompleted: Boolean, id: Int)
+    suspend fun updateChallengeIsCompleted(isCompleted: Boolean, id: Int)
+
+    @Query("SELECT count(*) from challenges where id = :id")
+    suspend fun checkIfChallengeExist(id: Int): Int
 }

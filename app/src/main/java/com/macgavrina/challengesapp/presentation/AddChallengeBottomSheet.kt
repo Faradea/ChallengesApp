@@ -4,18 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.macgavrina.challengesapp.databinding.BottomSheetAddChallengeBinding
 import com.macgavrina.challengesapp.domain.Challenge
+import com.macgavrina.challengesapp.presentation.AddNewChallengeViewModel.AddNewChallengeViewState.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import com.macgavrina.challengesapp.presentation.AddNewChallengeViewModel.AddNewChallengeViewState.*
+
 
 @AndroidEntryPoint
 class AddChallengeBottomSheet: BottomSheetDialogFragment() {
@@ -23,6 +25,8 @@ class AddChallengeBottomSheet: BottomSheetDialogFragment() {
     private lateinit var binding: BottomSheetAddChallengeBinding
 
     private val viewModel: AddNewChallengeViewModel by viewModels()
+
+    private var currentlyDisplayedChallenge: Challenge? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,12 +38,15 @@ class AddChallengeBottomSheet: BottomSheetDialogFragment() {
             viewModel.getRandomChallenge()
         }
         binding.acceptChallengeButton.setOnClickListener {
-            viewModel.acceptChallenge(binding.newChallengeTv.text.toString())
-            dialog?.hide()
+            currentlyDisplayedChallenge?.let {
+                viewModel.acceptChallenge(it)
+                dismiss()
+            }
         }
         binding.skipChallengeButton.setOnClickListener {
             viewModel.getRandomChallenge()
         }
+
         return binding.root
     }
 
@@ -52,6 +59,7 @@ class AddChallengeBottomSheet: BottomSheetDialogFragment() {
                     when (state) {
                         is Data -> {
                             binding.newChallengeTv.text = state.data.name
+                            currentlyDisplayedChallenge = state.data
                         }
                        else -> {}
                     }
