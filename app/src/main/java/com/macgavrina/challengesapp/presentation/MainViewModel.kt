@@ -3,10 +3,7 @@ package com.macgavrina.challengesapp.presentation
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.macgavrina.challengesapp.domain.Challenge
-import com.macgavrina.challengesapp.domain.GetChallengesAllUsecase
-import com.macgavrina.challengesapp.domain.GetRandomChallengeUsecase
-import com.macgavrina.challengesapp.domain.UpdateChallengeIsCompletedUsecase
+import com.macgavrina.challengesapp.domain.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -31,7 +28,12 @@ class MainViewModel @Inject constructor(
 
     init {
         state = getChallengesAllUsecase.execute().flowOn(Dispatchers.IO).map {
-            if (it.isEmpty()) MainState.Empty else MainState.Data(it)
+            when (it) {
+                is Resource.Error -> MainState.Empty
+                is Resource.Success -> {
+                    if (it.data.isEmpty()) MainState.Empty else MainState.Data(it.data)
+                }
+            }
         }.stateIn(
             scope = viewModelScope + Dispatchers.IO,
             started = SharingStarted.WhileSubscribed(5000L),

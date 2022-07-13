@@ -7,5 +7,5 @@ class GetChallengesAllUsecase @Inject constructor(
     private val repository: ChallengesRepository
 ) {
 
-    fun execute(): Flow<List<Challenge>> = repository.getChallengesAll()
+    fun execute(): Flow<Resource<List<Challenge>>> = repository.getChallengesAll()
 }

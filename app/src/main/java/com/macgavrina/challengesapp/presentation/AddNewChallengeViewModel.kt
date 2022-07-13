@@ -1,12 +1,11 @@
 package com.macgavrina.challengesapp.presentation
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.macgavrina.challengesapp.domain.AcceptChallengeUsecase
 import com.macgavrina.challengesapp.domain.Challenge
 import com.macgavrina.challengesapp.domain.GetRandomChallengeUsecase
-import com.macgavrina.challengesapp.domain.ResultOf
+import com.macgavrina.challengesapp.domain.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -38,12 +37,12 @@ class AddNewChallengeViewModel @Inject constructor(
         viewModelScope.launch {
             _state.emit(AddNewChallengeViewState.Loading)
             when (val result = getRandomChallengeUsecase.execute()) {
-                is ResultOf.Success -> {
+                is Resource.Success -> {
                     _state.emit(
                         AddNewChallengeViewState.Data(result.data)
                     )
                 }
-                is ResultOf.Error -> {
+                is Resource.Error -> {
                     _state.emit(
                         AddNewChallengeViewState.Error(result.message)
                     )

@@ -4,11 +4,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface ChallengesRepository {
 
-    suspend fun getRandomChallenge(): ResultOf<Challenge>
+    suspend fun getRandomChallenge(): Resource<Challenge>
 
     suspend fun addChallenge(challenge: Challenge)
 
-    fun getChallengesAll(): Flow<List<Challenge>>
+    fun getChallengesAll(): Flow<Resource<List<Challenge>>>
 
     suspend fun updateChallengeIsCompleted(isCompleted: Boolean, id: Int)
 
