@@ -2,7 +2,6 @@ package com.macgavrina.challengesapp.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.lifecycle.Lifecycle
@@ -17,11 +16,13 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class ChallengesListActivity : AppCompatActivity() {
 
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: ChallengesListViewModel by viewModels()
 
     private val adapter = ChallengesListAdapter(
         onUpdateIsChecked = { id, isChecked ->
-            viewModel.updateChallengeIsCompleted(id, isChecked)
+            viewModel.onEvent(
+                ChallengesListViewModel.ChallengesListEvent.UpdateChallengeIsCompleted(id, isChecked)
+            )
         }
     )
 
@@ -33,7 +34,7 @@ class ChallengesListActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.addChallengeButton.setOnClickListener {
-            viewModel.onAddChallenge()
+            viewModel.onEvent(ChallengesListViewModel.ChallengesListEvent.AddNewChallenge)
         }
 
         lifecycleScope.launch {
@@ -50,17 +51,10 @@ class ChallengesListActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.state.collectLatest { state ->
-                    when (state) {
-                        is MainViewModel.MainState.Empty -> {
-                            binding.challengesRv.visibility = View.INVISIBLE
-                            binding.emptyTv.visibility = View.VISIBLE
-                        }
-                        is MainViewModel.MainState.Data -> {
-                            adapter.submitList(state.items)
-                            binding.challengesRv.visibility = View.VISIBLE
-                            binding.emptyTv.visibility = View.INVISIBLE
-                        }
-                    }
+                    binding.emptyTv.visibility =
+                        if (state.isEmpty) View.VISIBLE else View.INVISIBLE
+
+                    adapter.submitList(state.items)
                 }
             }
         }

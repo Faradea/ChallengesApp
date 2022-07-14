@@ -18,42 +18,71 @@ class AddNewChallengeViewModel @Inject constructor(
     private val acceptChallengeUsecase: AcceptChallengeUsecase
 ): ViewModel() {
 
-    private val _state = MutableStateFlow<AddNewChallengeViewState>(AddNewChallengeViewState.Loading)
-    val state: SharedFlow<AddNewChallengeViewState> = _state
+    private val _state = MutableStateFlow(
+        AddNewChallengeState(
+            isLoading = false,
+            errorMessage = null,
+            challenge = null,
+            buttonsAreClickable = false
+        )
+    )
+    val state: SharedFlow<AddNewChallengeState> = _state
 
     init {
-        if (_state.value !is AddNewChallengeViewState.Data) {
+        if (_state.value.challenge == null) {
             getRandomChallenge()
         }
     }
 
-    fun acceptChallenge(challenge: Challenge) {
+    fun onEvent(event: AddNewChallengeEvent) {
+        when (event) {
+            is AddNewChallengeEvent.AcceptChallenge -> acceptChallenge(event.challenge)
+            is AddNewChallengeEvent.ShowNextChallenge -> getRandomChallenge()
+        }
+    }
+
+    private fun acceptChallenge(challenge: Challenge) {
         viewModelScope.launch {
             acceptChallengeUsecase.execute(challenge)
         }
     }
 
-    fun getRandomChallenge() {
+    private fun getRandomChallenge() {
         viewModelScope.launch {
-            _state.emit(AddNewChallengeViewState.Loading)
+            _state.emit(_state.value.copy(
+                isLoading = true, challenge = null, errorMessage = null, buttonsAreClickable = false
+            ))
             when (val result = getRandomChallengeUsecase.execute()) {
                 is Resource.Success -> {
                     _state.emit(
-                        AddNewChallengeViewState.Data(result.data)
+                        _state.value.copy(
+                            isLoading = false,
+                            challenge = result.data,
+                            buttonsAreClickable = true
+                        )
                     )
                 }
                 is Resource.Error -> {
                     _state.emit(
-                        AddNewChallengeViewState.Error(result.message)
+                        _state.value.copy(
+                            isLoading = false,
+                            errorMessage = result.message
+                        )
                     )
                 }
             }
         }
     }
 
-    sealed class AddNewChallengeViewState (data: Challenge? = null, errorMessage: String? = null) {
-        object Loading: AddNewChallengeViewState()
-        class Data(val data: Challenge): AddNewChallengeViewState(data = data)
-        class Error(val errorMessage: String): AddNewChallengeViewState(errorMessage = errorMessage)
+    data class AddNewChallengeState(
+        val isLoading: Boolean,
+        val errorMessage: String?,
+        val challenge: Challenge?,
+        val buttonsAreClickable: Boolean
+    )
+
+    sealed class AddNewChallengeEvent {
+        class AcceptChallenge(val challenge: Challenge): AddNewChallengeEvent()
+        object ShowNextChallenge: AddNewChallengeEvent()
     }
 }

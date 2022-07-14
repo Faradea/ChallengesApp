@@ -13,7 +13,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.macgavrina.challengesapp.databinding.BottomSheetAddChallengeBinding
 import com.macgavrina.challengesapp.domain.Challenge
-import com.macgavrina.challengesapp.presentation.AddNewChallengeViewModel.AddNewChallengeViewState.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -35,16 +34,16 @@ class AddChallengeBottomSheet: BottomSheetDialogFragment() {
     ): View {
         binding = BottomSheetAddChallengeBinding.inflate(inflater, container, false)
         binding.errorReloadTv.setOnClickListener {
-            viewModel.getRandomChallenge()
+            viewModel.onEvent(AddNewChallengeViewModel.AddNewChallengeEvent.ShowNextChallenge)
         }
         binding.acceptChallengeButton.setOnClickListener {
             currentlyDisplayedChallenge?.let {
-                viewModel.acceptChallenge(it)
+                viewModel.onEvent(AddNewChallengeViewModel.AddNewChallengeEvent.AcceptChallenge(it))
                 dismiss()
             }
         }
         binding.skipChallengeButton.setOnClickListener {
-            viewModel.getRandomChallenge()
+            viewModel.onEvent(AddNewChallengeViewModel.AddNewChallengeEvent.ShowNextChallenge)
         }
 
         return binding.root
@@ -56,28 +55,26 @@ class AddChallengeBottomSheet: BottomSheetDialogFragment() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.state.collectLatest { state ->
-                    when (state) {
-                        is Data -> {
-                            binding.newChallengeTv.text = state.data.name
-                            currentlyDisplayedChallenge = state.data
-                        }
-                       else -> {}
+                    state.challenge?.let {
+                        binding.newChallengeTv.text = it.name
+                        currentlyDisplayedChallenge = it
                     }
+                    binding.newChallengeTv.visibility =
+                        if (state.challenge != null) View.VISIBLE else View.GONE
 
                     binding.errorLayout.visibility =
-                        if (state is Error) View.VISIBLE else View.GONE
+                        if (state.errorMessage != null) View.VISIBLE else View.GONE
 
                     listOf(binding.acceptChallengeButton, binding.skipChallengeButton)
                         .forEach { button ->
-                            button.visibility = if (state is Error) View.GONE else View.VISIBLE
-                            button.alpha = if (state is Data) 1f else 0.5f
-                            button.isClickable = (state is Data)
+                            button.visibility =
+                                if (state.errorMessage != null) View.GONE else View.VISIBLE
+                            button.alpha = if (state.buttonsAreClickable) 1f else 0.5f
+                            button.isClickable = state.buttonsAreClickable
                         }
 
                     binding.progressBar.visibility =
-                        if (state is Loading) View.VISIBLE else View.GONE
-                    binding.newChallengeTv.visibility =
-                        if (state is Data) View.VISIBLE else View.GONE
+                        if (state.isLoading) View.VISIBLE else View.GONE
                 }
             }
         }

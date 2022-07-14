@@ -1,5 +1,6 @@
 package com.macgavrina.challengesapp.data
 
+import android.util.Log
 import com.macgavrina.challengesapp.data.local.ChallengeLocalStore
 import com.macgavrina.challengesapp.data.remote.ChallengeModel
 import com.macgavrina.challengesapp.data.remote.ChallengeRemoteStore
@@ -19,6 +20,10 @@ class ChallengesRepositoryImpl @Inject constructor(
     private val localStore: ChallengeLocalStore
 ): ChallengesRepository {
 
+    companion object {
+        private const val LOG_TAG = "ChallengesRepository"
+    }
+
     override suspend fun getRandomChallenge(): Resource<Challenge> {
        return try {
             val apiResponse = remoteStore.getRandomChallenge()
@@ -28,10 +33,10 @@ class ChallengesRepositoryImpl @Inject constructor(
                 Resource.Error(message = apiResponse.message())
             }
         } catch (e: HttpException) {
-            e.printStackTrace()
+            Log.e(LOG_TAG, e.message())
             Resource.Error(message = e.message())
         } catch (e: IOException) {
-            e.printStackTrace()
+            Log.e(LOG_TAG, e.message ?: e.toString())
             Resource.Error(message = e.message ?: "Couldn't load data")
         }
     }
