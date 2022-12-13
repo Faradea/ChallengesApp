@@ -45,11 +45,9 @@ class ChallengesRepositoryImpl @Inject constructor(
         localStore.addChallenge(challenge.toEntity())
     }
 
-    override fun getChallengesAll(): Flow<Resource<List<Challenge>>> {
+    override fun getChallengesAll(): Flow<List<Challenge>> {
         return localStore.getChallengesAll().map { list ->
             list.map { it.toDomain() }
-        }.map {
-            Resource.Success(it)
         }
     }
 

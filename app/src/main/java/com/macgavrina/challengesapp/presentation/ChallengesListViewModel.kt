@@ -28,15 +28,10 @@ class ChallengesListViewModel @Inject constructor(
 
     init {
         state = getChallengesAllUsecase.execute().flowOn(Dispatchers.IO).map {
-            when (it) {
-                is Resource.Error -> state.value.copy(isEmpty = true, items = emptyList())
-                is Resource.Success -> {
-                    if (it.data.isEmpty()) {
-                        state.value.copy(isEmpty = true, items = emptyList())
-                    } else {
-                        state.value.copy(isEmpty = false, items = it.data)
-                    }
-                }
+            if (it.isEmpty()) {
+                state.value.copy(isEmpty = true, items = emptyList())
+            } else {
+                state.value.copy(isEmpty = false, items = it)
             }
         }.stateIn(
             scope = viewModelScope + Dispatchers.IO,
