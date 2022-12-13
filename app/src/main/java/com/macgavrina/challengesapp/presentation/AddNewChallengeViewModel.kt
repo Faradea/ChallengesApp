@@ -2,20 +2,18 @@ package com.macgavrina.challengesapp.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.macgavrina.challengesapp.domain.AcceptChallengeUsecase
-import com.macgavrina.challengesapp.domain.Challenge
-import com.macgavrina.challengesapp.domain.GetRandomChallengeUsecase
-import com.macgavrina.challengesapp.domain.Resource
+import com.macgavrina.challengesapp.domain.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class AddNewChallengeViewModel @Inject constructor(
-    private val getRandomChallengeUsecase: GetRandomChallengeUsecase,
-    private val acceptChallengeUsecase: AcceptChallengeUsecase
+    private val challengesRepository: ChallengesRepository
 ): ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -43,7 +41,9 @@ class AddNewChallengeViewModel @Inject constructor(
 
     private fun acceptChallenge(challenge: Challenge) {
         viewModelScope.launch {
-            acceptChallengeUsecase.execute(challenge)
+            withContext(Dispatchers.IO) {
+                challengesRepository.addChallenge(challenge)
+            }
         }
     }
 
@@ -52,7 +52,20 @@ class AddNewChallengeViewModel @Inject constructor(
             _state.emit(_state.value.copy(
                 isLoading = true, challenge = null, errorMessage = null, buttonsAreClickable = false
             ))
-            when (val result = getRandomChallengeUsecase.execute()) {
+            when (val result = withContext(Dispatchers.IO) {
+                for (i in 0.. 20) {
+                    val newChallenge = challengesRepository.getRandomChallenge()
+                    if (newChallenge is Resource.Error) {
+                        return@withContext newChallenge
+                    }
+                    if (!challengesRepository.checkIfChallengeAlreadyExist(
+                            (newChallenge as Resource.Success).data
+                        )) {
+                        return@withContext newChallenge
+                    }
+                }
+                return@withContext Resource.Error<Challenge>(message = "Probably there is no new challenges left")
+            }) {
                 is Resource.Success -> {
                     _state.emit(
                         _state.value.copy(

@@ -9,12 +9,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class ChallengesListViewModel @Inject constructor(
-    private val getChallengesAllUsecase: GetChallengesAllUsecase,
-    private val updateChallengeIsCompletedUsecase: UpdateChallengeIsCompletedUsecase
+    private val repository: ChallengesRepository
 ): ViewModel() {
 
     lateinit var state: StateFlow<ChallengesListState>
@@ -27,7 +27,7 @@ class ChallengesListViewModel @Inject constructor(
     val navigationEvent: SharedFlow<NavigationEvent> = _navigationEvents
 
     init {
-        state = getChallengesAllUsecase.execute().flowOn(Dispatchers.IO).map {
+        state = repository.getChallengesAll().flowOn(Dispatchers.IO).map {
             if (it.isEmpty()) {
                 state.value.copy(isEmpty = true, items = emptyList())
             } else {
@@ -58,7 +58,9 @@ class ChallengesListViewModel @Inject constructor(
 
     private fun updateChallengeIsCompleted(id: Int, isCompleted: Boolean) =
         viewModelScope.launch {
-            updateChallengeIsCompletedUsecase.execute(id = id, isCompleted = isCompleted)
+            withContext(Dispatchers.IO) {
+                repository.updateChallengeIsCompleted(isCompleted, id)
+            }
         }
 
     data class ChallengesListState (
