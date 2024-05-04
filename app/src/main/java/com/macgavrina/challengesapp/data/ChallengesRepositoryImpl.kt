@@ -5,6 +5,7 @@ import com.macgavrina.challengesapp.data.local.ChallengeLocalStore
 import com.macgavrina.challengesapp.data.remote.ChallengeModel
 import com.macgavrina.challengesapp.data.remote.ChallengeRemoteStore
 import com.macgavrina.challengesapp.domain.Challenge
+import com.macgavrina.challengesapp.domain.ChallengeValidationUtils
 import com.macgavrina.challengesapp.domain.ChallengesRepository
 import com.macgavrina.challengesapp.domain.Resource
 import kotlinx.coroutines.flow.Flow
@@ -28,7 +29,12 @@ class ChallengesRepositoryImpl @Inject constructor(
        return try {
             val apiResponse = remoteStore.getRandomChallenge()
             if (apiResponse.isSuccessful && apiResponse.body() != null) {
-                Resource.Success((apiResponse.body() as ChallengeModel).toDomain())
+                val challengeDomain = (apiResponse.body() as ChallengeModel).toDomain()
+                if (ChallengeValidationUtils.isChallengeValid(challengeDomain)) {
+                    Resource.Success(challengeDomain)
+                } else {
+                    Resource.Error(message = "There is something wrong with this challenge, try another one")
+                }
             } else {
                 Resource.Error(message = apiResponse.message())
             }
