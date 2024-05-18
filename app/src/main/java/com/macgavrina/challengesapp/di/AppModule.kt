@@ -9,6 +9,8 @@ import com.macgavrina.challengesapp.data.local.ChallengeLocalStore
 import com.macgavrina.challengesapp.data.remote.ChallengeRemoteStore
 import com.macgavrina.challengesapp.data.remote.ChallengesAPI
 import com.macgavrina.challengesapp.domain.ChallengesRepository
+import com.macgavrina.challengesapp.presentation.DefaultDispatcherProvider
+import com.macgavrina.challengesapp.presentation.DispatcherProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -68,5 +70,11 @@ object AppModule {
             applicationContext,
             AppDatabase::class.java, "challenges-bd"
         ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideDispatcherProvider(): DispatcherProvider {
+        return DefaultDispatcherProvider()
     }
 }

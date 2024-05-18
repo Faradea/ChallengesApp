@@ -7,13 +7,15 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class AddNewChallengeViewModel @Inject constructor(
-    private val challengesRepository: ChallengesRepository
+    private val challengesRepository: ChallengesRepository,
+    val dispatcherProvider: DispatcherProvider
 ): ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -40,9 +42,11 @@ class AddNewChallengeViewModel @Inject constructor(
     }
 
     private fun acceptChallenge(challenge: Challenge) {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                challengesRepository.addChallenge(challenge)
+        viewModelScope.launch(dispatcherProvider.main) {
+            withContext(dispatcherProvider.io) {
+                if (ChallengeValidationUtils.isChallengeValid(challenge)) {
+                    challengesRepository.addChallenge(challenge)
+                }
             }
         }
     }

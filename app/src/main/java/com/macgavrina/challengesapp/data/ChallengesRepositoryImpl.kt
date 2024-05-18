@@ -30,11 +30,7 @@ class ChallengesRepositoryImpl @Inject constructor(
             val apiResponse = remoteStore.getRandomChallenge()
             if (apiResponse.isSuccessful && apiResponse.body() != null) {
                 val challengeDomain = (apiResponse.body() as ChallengeModel).toDomain()
-                if (ChallengeValidationUtils.isChallengeValid(challengeDomain)) {
-                    Resource.Success(challengeDomain)
-                } else {
-                    Resource.Error(message = "There is something wrong with this challenge, try another one")
-                }
+                Resource.Success(challengeDomain)
             } else {
                 Resource.Error(message = apiResponse.message())
             }
