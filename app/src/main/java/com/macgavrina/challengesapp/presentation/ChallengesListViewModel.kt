@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.macgavrina.challengesapp.domain.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
@@ -14,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChallengesListViewModel @Inject constructor(
-    private val repository: ChallengesRepository
+    private val repository: ChallengesRepository,
+    private val dispatcherProvider: DispatcherProvider
 ): ViewModel() {
 
     lateinit var state: StateFlow<ChallengesListState>
@@ -27,14 +27,18 @@ class ChallengesListViewModel @Inject constructor(
     val navigationEvent: SharedFlow<NavigationEvent> = _navigationEvents
 
     init {
-        state = repository.getChallengesAll().flowOn(Dispatchers.IO).map {
+        loadSavedChallenges()
+    }
+
+    fun loadSavedChallenges() {
+        state = repository.getChallengesAll().flowOn(dispatcherProvider.io).map {
             if (it.isEmpty()) {
                 state.value.copy(isEmpty = true, items = emptyList())
             } else {
                 state.value.copy(isEmpty = false, items = it)
             }
         }.stateIn(
-            scope = viewModelScope + Dispatchers.IO,
+            scope = viewModelScope + dispatcherProvider.io,
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = ChallengesListState(isEmpty = true, items = emptyList())
         )
@@ -58,7 +62,7 @@ class ChallengesListViewModel @Inject constructor(
 
     private fun updateChallengeIsCompleted(id: Int, isCompleted: Boolean) =
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
+            withContext(dispatcherProvider.io) {
                 repository.updateChallengeIsCompleted(isCompleted, id)
             }
         }

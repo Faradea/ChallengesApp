@@ -4,10 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.macgavrina.challengesapp.domain.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -15,7 +13,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AddNewChallengeViewModel @Inject constructor(
     private val challengesRepository: ChallengesRepository,
-    val dispatcherProvider: DispatcherProvider
+    private val dispatcherProvider: DispatcherProvider
 ): ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -56,7 +54,7 @@ class AddNewChallengeViewModel @Inject constructor(
             _state.emit(_state.value.copy(
                 isLoading = true, challenge = null, errorMessage = null, buttonsAreClickable = false
             ))
-            when (val result = withContext(Dispatchers.IO) {
+            when (val result = withContext(dispatcherProvider.io) {
                 for (i in 0.. 20) {
                     val newChallenge = challengesRepository.getRandomChallenge()
                     if (newChallenge is Resource.Error) {
